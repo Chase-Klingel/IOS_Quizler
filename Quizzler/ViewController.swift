@@ -10,9 +10,10 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let allQuestions    = QuestionBank()
-    var questionNumber  = 0
+    let allQuestions = QuestionBank()
+    var questionNumber = 0
     var currentQuestion = ""
+    var score = 0
     
     @IBOutlet weak var questionLabel: UILabel!
     @IBOutlet weak var scoreLabel: UILabel!
@@ -24,7 +25,6 @@ class ViewController: UIViewController {
         
         nextQuestion()
     }
-
 
     @IBAction func answerPressed(_ sender: AnyObject) {
         var pickedAnswer = false
@@ -45,13 +45,18 @@ class ViewController: UIViewController {
         
         if (pickedAnswer == answer) {
             print("Righto!")
+            score = score + 1
         } else {
             print("Wrongo!")
         }
     }
     
     func nextQuestion() {
-        if (questionNumber == (allQuestions.list.count - 1)) {
+        if (questionNumber != (allQuestions.list.count)) {
+            currentQuestion = allQuestions.list[questionNumber].questionText
+            questionLabel.text = currentQuestion
+            updateUI()
+        } else {
             let alert = UIAlertController(title: "Awesome", message: "You've finished all the questions, do you want to start over?", preferredStyle: .alert)
             let restartAction = UIAlertAction(title: "Restart", style: .default, handler: {
                 (UIAlertAction) in
@@ -61,19 +66,22 @@ class ViewController: UIViewController {
             alert.addAction(restartAction)
             
             present(alert, animated: true, completion: nil)
+            
             return
         }
-        
-        currentQuestion    = allQuestions.list[questionNumber].questionText
-        questionLabel.text = currentQuestion
     }
     
     func updateUI() {
+        scoreLabel.text = "Score \(score)"
+        progressLabel.text = "\(questionNumber + 1) / 13"
         
+        progressBar.frame.size.width = (view.frame.size.width / 13) * CGFloat(questionNumber + 1)
     }
     
     func startOver() {
         questionNumber = 0
+        score = 0
+
         nextQuestion()
     }
     
